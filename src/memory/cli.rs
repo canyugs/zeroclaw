@@ -4,9 +4,9 @@ use super::{
     MemoryBackendKind,
 };
 use crate::config::Config;
-use anyhow::{bail, Result};
 #[cfg(feature = "memory-postgres")]
 use anyhow::Context;
+use anyhow::{bail, Result};
 use console::style;
 
 /// Handle `zeroclaw memory <subcommand>` CLI commands.
@@ -62,12 +62,6 @@ fn create_cli_memory(config: &Config) -> Result<Box<dyn Memory>> {
                     sp.connect_timeout_secs,
                 )?;
                 Ok(Box::new(mem))
-            }
-            #[cfg(not(feature = "memory-postgres"))]
-            {
-                bail!(
-                    "memory backend 'postgres' requested but this build was compiled without `memory-postgres`; rebuild with `--features memory-postgres`"
-                );
             }
         }
         _ => create_memory_for_migration(&backend, &config.workspace_dir),

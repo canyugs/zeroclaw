@@ -1099,9 +1099,7 @@ fn sanitize_tool_json_value(
         return None;
     }
 
-    let Some(object) = value.as_object() else {
-        return None;
-    };
+    let object = value.as_object()?;
 
     if let Some(tool_calls) = object.get("tool_calls").and_then(|value| value.as_array()) {
         if !tool_calls.is_empty()
@@ -1141,7 +1139,7 @@ fn strip_isolated_tool_json_artifacts(message: &str, known_tool_names: &HashSet<
     let mut saw_tool_call_payload = false;
 
     while cursor < message.len() {
-        let Some(rel_start) = message[cursor..].find(|ch: char| ch == '{' || ch == '[') else {
+        let Some(rel_start) = message[cursor..].find(['{', '[']) else {
             cleaned.push_str(&message[cursor..]);
             break;
         };
@@ -2178,7 +2176,7 @@ fn maybe_restart_managed_daemon_service() -> Result<bool> {
     Ok(false)
 }
 
-pub async fn handle_command(command: crate::ChannelCommands, config: &Config) -> Result<()> {
+pub(crate) async fn handle_command(command: crate::ChannelCommands, config: &Config) -> Result<()> {
     match command {
         crate::ChannelCommands::Start => {
             anyhow::bail!("Start must be handled in main.rs (requires async runtime)")
@@ -2605,10 +2603,12 @@ pub async fn start_channels(config: Config) -> Result<()> {
     );
 
     // Merge peripheral tools (UNO Q Bridge, RPi GPIO, etc.)
-    let peripheral_tools =
-        crate::peripherals::create_peripheral_tools(&config.peripherals).await?;
+    let peripheral_tools = crate::peripherals::create_peripheral_tools(&config.peripherals).await?;
     if !peripheral_tools.is_empty() {
-        tracing::info!(count = peripheral_tools.len(), "Peripheral tools added to channel server");
+        tracing::info!(
+            count = peripheral_tools.len(),
+            "Peripheral tools added to channel server"
+        );
         all_tools.extend(peripheral_tools);
     }
 

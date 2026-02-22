@@ -226,6 +226,7 @@ mod tests {
         // Result depends on platform availability
         match result {
             Ok(sandbox) => assert!(sandbox.is_available()),
+            #[allow(clippy::assertions_on_constants)]
             Err(_) => assert!(!cfg!(target_os = "linux")),
         }
     }
