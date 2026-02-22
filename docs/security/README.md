@@ -9,6 +9,7 @@ For current runtime behavior, start here:
 - Config reference: [../config-reference.md](../config-reference.md)
 - Operations runbook: [../operations-runbook.md](../operations-runbook.md)
 - Troubleshooting: [../troubleshooting.md](../troubleshooting.md)
+- SSRF threat model (http_request tool): [http-request-ssrf-threat-model.md](http-request-ssrf-threat-model.md)
 
 ## Proposal / Roadmap Docs
 
